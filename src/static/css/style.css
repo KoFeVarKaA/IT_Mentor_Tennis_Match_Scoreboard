@@ -122,14 +122,14 @@ footer {
 }
 
 /* Welcome Section */
-.welcome-image {
+/* .welcome-image {
     border-radius: 30px;
     margin-top: 20px;
     background-image: url('../images/welcome_image.png');
     background-position: center;
     min-height: 50vh;
     background-size: cover;
-}
+} */
 
 .view-results, .start-match {
     border-radius: 23px;

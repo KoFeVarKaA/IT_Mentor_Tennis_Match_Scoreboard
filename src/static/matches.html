@@ -22,20 +22,20 @@
         </div>
         <div>
             <nav class="nav-links">
-                <a class="nav-link" href="#">Home</a>
-                <a class="nav-link" href="#">Matches</a>
+                <a class="nav-link" href="/">Главная</a>
+                <a class="nav-link" href="/matches">Матчи</a>
             </nav>
         </div>
     </section>
 </header>
 <main>
     <div class="container">
-        <h1>Matches</h1>
+        <h1>Законченные матчи</h1>
         <div class="input-container">
-            <input class="input-filter" placeholder="Filter by name" type="text" />
+            <input class="input-filter" placeholder="Поиск по имени" type="text" />
             <div>
-                <a href="#">
-                    <button class="btn-filter">Reset Filter</button>
+                <a href="/matches">
+                    <button class="btn-filter">Сброс</button>
                 </a>
             </div>
         </div>
@@ -46,47 +46,43 @@
                 <th>Player Two</th>
                 <th>Winner</th>
             </tr>
+            {% for match in matches %}
             <tr>
-                <td>Rafael Nadal</td>
-                <td>Roger Federer</td>
-                <td><span class="winner-name-td">Rafael Nadal</span></td>
+                <td>{{ match.player_one }}</td>
+                <td>{{ match.player_two }}</td>
+                <td><span class="winner-name-td">{{ match.winner }}</span></td>
             </tr>
-            <tr>
-                <td>Rafael Nadal</td>
-                <td>Roger Federer</td>
-                <td><span class="winner-name-td">Roger Federer</span></td>
-            </tr>
-            <tr>
-                <td>Rafael Nadal</td>
-                <td>Roger Federer</td>
-                <td><span class="winner-name-td">Rafael Nadal</span></td>
-            </tr>
-            <tr>
-                <td>Rafael Nadal</td>
-                <td>Roger Federer</td>
-                <td><span class="winner-name-td">Roger Federer</span></td>
-            </tr>
-            <tr>
-                <td>Rafael Nadal</td>
-                <td>Roger Federer</td>
-                <td><span class="winner-name-td">Rafael Nadal</span></td>
-            </tr>
+            {% endfor %}
         </table>
 
         <div class="pagination">
-            <a class="prev" href="#"> < </a>
-            <a class="num-page current" href="#">1</a>
-            <a class="num-page" href="#">2</a>
-            <a class="num-page" href="#">3</a>
-            <a class="next" href="#"> > </a>
+            {% if pagination.prev_page %}
+                <a class="prev" href="{{ pagination.prev_page.url }}"> &lt; </a>
+            {% else %}
+                <a class="prev disabled" href="#"> &lt; </a>
+            {% endif %}
+
+            {% for page in pagination.pages %}
+                {% if page.is_current %}
+                    <a class="num-page current" href="{{ page.url }}">{{ page.number }}</a>
+                {% else %}
+                    <a class="num-page" href="{{ page.url }}">{{ page.number }}</a>
+                {% endif %}
+            {% endfor %}
+
+            {% if pagination.next_page %}
+                <a class="next" href="{{ pagination.next_page.url }}"> &gt; </a>
+            {% else %}
+                <a class="next disabled" href="#"> &gt; </a>
+            {% endif %}
         </div>
     </div>
 </main>
-<footer>
+<!-- <footer>
     <div class="footer">
         <p>&copy; Tennis Scoreboard, project from <a href="https://zhukovsd.github.io/java-backend-learning-course/">zhukovsd/java-backend-learning-course</a>
             roadmap.</p>
     </div>
-</footer>
+</footer> -->
 </body>
 </html>
