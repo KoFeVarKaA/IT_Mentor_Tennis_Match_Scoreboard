@@ -56,11 +56,11 @@ class Server(BaseHTTPRequestHandler):
             return Responses.initial_err(message)
         
         handle_class = self.controllers[path[1]]
-
         if  command == "GET":
             response = handle_class.do_GET(path)
         elif command == "POST":
             response = handle_class.do_POST(path)
+        self._send_response(self, response)
 
     def _send_response(self, response: dict):
         if 200 <= response["status_code"] <= 201:
