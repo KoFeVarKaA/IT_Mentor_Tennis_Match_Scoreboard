@@ -271,11 +271,11 @@ footer {
     padding-left: 10px;
 }
 
-.player1, .player2 {
+.player {
     font-size: 40px;
 }
 
-.player1 td, .player2 td {
+.player td {
     width: 5%;
     padding: 60px 5px;
     font-family: "Roboto Mono", monospace;
