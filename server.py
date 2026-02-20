@@ -14,7 +14,7 @@ logging.basicConfig(
 
 # Принимаем, обрабатываем запрос, отдаем контроллеру
 class Server(BaseHTTPRequestHandler):
-    def __init__(self, controllers:dict, *args, **kwargs):
+    def __init__(self, controllers: dict, *args, **kwargs):
         self.controllers = controllers
         super().__init__(*args, **kwargs)
 

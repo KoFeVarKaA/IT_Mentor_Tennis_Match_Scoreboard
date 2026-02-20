@@ -4,13 +4,13 @@ from dotenv import load_dotenv
 from server import Server
 from http.server import HTTPServer
 
-from src.roters.roter import controllers
+from src.roter import controller_factory
 
 
 load_dotenv()
 
 host, port = os.getenv('SERVER_HOST'), int(os.getenv('SERVER_PORT'))
-server =  HTTPServer((host, port), lambda *args, **kwargs: Server(controllers, *args, **kwargs))
+server =  HTTPServer((host, port), lambda *args, **kwargs: Server(controller_factory(), *args, **kwargs))
 
 if __name__ == "__main__":
     try:
