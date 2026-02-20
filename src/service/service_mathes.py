@@ -10,3 +10,6 @@ class MatchesService():
     ):
         self.repository_mathes = repository_mathes
         self.repository_players = repository_players
+
+    def do_GET():
+        pass
