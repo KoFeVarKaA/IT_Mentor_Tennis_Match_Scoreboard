@@ -9,7 +9,7 @@ from src.controller.controller_matches import MatchesController
 
 def controller_factory():
     return {
-        "": MainController(service=MatchesService(MatchesRepository, PlayersRepository)),
+        "": MainController(),
         "new-match": MatchNewController(service=MatchesService(MatchesRepository, PlayersRepository)),
         "match-score": MatchScoreController(service=MatchesService(MatchesRepository, PlayersRepository)),
         "matches": MatchesController(service=MatchesService(MatchesRepository, PlayersRepository)),   

@@ -10,5 +10,6 @@ dependencies = [
     "jinja2>=3.1.6",
     "mysqlclient>=2.2.8",
     "psycopg2-binary>=2.9.11",
+    "result>=0.17.0",
     "sqlalchemy>=2.0.46",
 ]
