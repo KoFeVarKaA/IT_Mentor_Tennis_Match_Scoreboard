@@ -11,6 +11,8 @@ class Render():
         self.match_score = env.get_template('match-score.html')
         self.matches = env.get_template('matches.html')
 
+    
+
     def render_new_match(self, dto):
         pass
 

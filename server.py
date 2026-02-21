@@ -1,6 +1,8 @@
 from http.server import BaseHTTPRequestHandler
 import json
 import logging
+import mimetypes
+import os
 from urllib.parse import parse_qs, urlparse
 from src.response import Responses
 
@@ -31,54 +33,83 @@ class Server(BaseHTTPRequestHandler):
         self.end_headers()
 
     def do_GET(self):
-        response = self._process_request("GET")
-        self._send_response(response)
+        self._process_request("GET")
 
     def do_POST(self):
-        response = self._process_request("POST")
-        self._send_response(response)
+        self._process_request("POST")
 
     def do_PATCH(self):
-        response = self._process_request("PATCH")
-        self._send_response(response)
+        self._process_request("PATCH")
+
         
     # Заменить command на self.command
     def _process_request(self, command: str):
-        logging.debug(f"{command} {"/".join(map(str, self.client_address))}{self.path}")
+        logging.debug(f"{self.command} {self.client_address}{self.path}")
         parsed_url = urlparse(self.path)
         path = parsed_url.path.split("/")
         query = parse_qs(parsed_url.query)
         content_length = int(self.headers.get('Content-Length', 0))
         data = parse_qs(self.rfile.read(content_length).decode('utf-8'))
 
+        if path[1] in ("css", "js", "images", "favicon.ico"):
+            self._send_response_static()
+            return
+
         if path[1] not in self.controllers:
             message = "К сожалению, сервер не обрабатывает запросы по данному адресу"
-            return Responses.initial_err(message)
+            self._send_response(Responses.initial_err(message))
+            return
         
         handle_class = self.controllers[path[1]]
         if  command == "GET":
-            response = handle_class.do_GET(path)
+            response = handle_class.do_GET(path, query)
         elif command == "POST":
-            response = handle_class.do_POST(path)
-        self._send_response(self, response)
+            response = handle_class.do_POST(path, data)
+        self._send_response(response)
 
     def _send_response(self, response: dict):
         if 200 <= response["status_code"] <= 201:
+            logging.info("Запрос успешно выполнен")
+
             self.send_response(response["status_code"])
-            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Type", "text/html")
             self.send_header("Cache-Control", "no-cache")
             self.send_header("Access-Control-Allow-Origin", "*")
             self.end_headers()
 
-            self.wfile.write(json.dumps(response["data"]).encode("utf-8"))
+            self.wfile.write(response["data"])
         else:
+            logging.error(f"{response['data']['message']}")
             self._send_error_response(response)
+    
+    def _send_response_static(self):
+        file_path = os.path.join("src/view/static", self.path.lstrip("/"))
 
+        if not os.path.isfile(file_path):
+            message = "Статичный файл не найден"
+            logging.error(message)
+            self._send_error_response(Responses.initial_err(message))
+            return
+
+        mime_type, _ = mimetypes.guess_type(file_path)
+        if mime_type is None:
+            mime_type = "application/octet-stream"  
+
+        logging.info("Запрос успешно выполнен")
+        self.send_response(200)
+        self.send_header("Content-Type", mime_type)
+        self.send_header("Cache-Control", "no-cache")
+        self.end_headers()
+
+        with open(file_path, "rb") as file:
+            self.wfile.write(file.read())
+
+    # переделать в всплывающее окно
     def _send_error_response(self, response: dict):
         self.send_response(response["status_code"])
         self.send_header("Content-Type", "application/json")
         self.end_headers()
         response = {"code": str(response["status_code"]), 
                     "status": "Ошибка", 
-                    "message": response["message"]}
+                    "message": response["data"]["message"]}
         self.wfile.write(json.dumps(response).encode("utf-8"))

@@ -45,8 +45,8 @@
                 </tr>
                 </thead>
                 <tbody>
-                    {% for player in players %}
-                    <tr class="player">
+
+                    <tr class="player1">
                         <td class="table-text">{{ player.name }}</td>
                         <td class="table-text">{{ player.sets }}</td>
                         <td class="table-text">{{ player.games }}</td>
@@ -55,7 +55,16 @@
                             <div class="score-btn">Score</div>
                         </td>
                     </tr>
-                    {% endfor %}
+
+                    <tr class="player2">
+                        <td class="table-text">{{ player.name }}</td>
+                        <td class="table-text">{{ player.sets }}</td>
+                        <td class="table-text">{{ player.games }}</td>
+                        <td class="table-text">{{ player.points }}</td>
+                        <td class="table-text">
+                            <div class="score-btn">Score</div>
+                        </td>
+                    </tr>
                  </tbody>
             </table>
         </section>
