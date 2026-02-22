@@ -1,8 +1,8 @@
 """init_mathes_players
 
-Revision ID: 49f1125067d9
+Revision ID: bf20ac0fdea0
 Revises: 
-Create Date: 2026-02-18 14:49:26.139276
+Create Date: 2026-02-22 15:12:20.540683
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '49f1125067d9'
+revision: str = 'bf20ac0fdea0'
 down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -29,7 +29,7 @@ def upgrade() -> None:
     op.create_index(op.f('ix_players_name'), 'players', ['name'], unique=True)
     op.create_table('matches',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('uuid', sa.String(), nullable=False),
+    sa.Column('uuid', sa.UUID(as_uuid=False), nullable=True),
     sa.Column('player1', sa.Integer(), nullable=False),
     sa.Column('player2', sa.Integer(), nullable=False),
     sa.Column('winner', sa.Integer(), nullable=False),

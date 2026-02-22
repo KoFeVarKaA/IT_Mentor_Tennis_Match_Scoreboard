@@ -1,8 +1,8 @@
 import logging
-from dto.dto_match import MatchDTO
-from dto.dto_player import PlayerDTO
-from errors import InitialError
-from response import Responses
+from src.dto.dto_match import MatchDTO
+from src.dto.dto_player import PlayerDTO
+from src.errors import InitialError
+from src.response import Responses
 from src.service.service_mathes import MatchesService
 from src.controller.controller_base import BaseController
 

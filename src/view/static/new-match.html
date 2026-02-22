@@ -33,12 +33,16 @@
             <h1>Начать новый матч</h1>
             <div class="new-match-image"></div>
             <div class="form-container center">
-                <form method="post" action="#">
+                <form method="post" action="/new-match">
                     <!-- <p style="color: red;">Sample error message</p> -->
                     <label class="label-player" for="playerOne">Первый игрок</label>
-                    <input class="input-player" placeholder="Имя" type="text" required title="Enter a name">
+                    <input class="input-player" placeholder="Имя" type="text" required title="Enter a name"
+                    name="playerOne" required>
+
                     <label class="label-player" for="playerTwo">Второй игрок</label>
-                    <input class="input-player" placeholder="Имя" type="text" required title="Enter a name">
+                    <input class="input-player" placeholder="Имя" type="text" required title="Enter a name"
+                    name="playerTwo" required>
+
                     <input class="form-button" type="submit" value="Начать">
                 </form>
             </div>
