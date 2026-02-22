@@ -29,10 +29,10 @@ def upgrade() -> None:
     op.create_index(op.f('ix_players_name'), 'players', ['name'], unique=True)
     op.create_table('matches',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('uuid', sa.UUID(as_uuid=False), nullable=True),
+    sa.Column('uuid', sa.UUID(as_uuid=False), nullable=False),
     sa.Column('player1', sa.Integer(), nullable=False),
     sa.Column('player2', sa.Integer(), nullable=False),
-    sa.Column('winner', sa.Integer(), nullable=False),
+    sa.Column('winner', sa.Integer(), nullable=True),
     sa.Column('score', sa.String(), nullable=False),
     sa.ForeignKeyConstraint(['player1'], ['players.id'], ),
     sa.ForeignKeyConstraint(['player2'], ['players.id'], ),

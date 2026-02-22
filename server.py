@@ -78,6 +78,11 @@ class Server(BaseHTTPRequestHandler):
             self.end_headers()
 
             self.wfile.write(response["data"])
+        
+        elif 301 <= response["status_code"] <= 308:
+            self.send_response(response["status_code"])
+            self.send_header("Location", response["url"])
+            self.end_headers()
         else:
             logging.error(f"{response['data']['message']}")
             self._send_error_response(response)

@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
 
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="js/app.js"></script>
 </head>
 <body>
@@ -33,7 +34,7 @@
             <h1>Начать новый матч</h1>
             <div class="new-match-image"></div>
             <div class="form-container center">
-                <form method="post" action="/new-match">
+                <form method="post" action="/new-match" data-async>
                     <!-- <p style="color: red;">Sample error message</p> -->
                     <label class="label-player" for="playerOne">Первый игрок</label>
                     <input class="input-player" placeholder="Имя" type="text" required title="Enter a name"

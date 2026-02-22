@@ -12,6 +12,13 @@ class Responses():
             "status_code": 200
         }
     
+    def redirect(url: str) -> dict:
+        return {
+            "url": url,
+            "status_code": 303
+        }
+    
+    
     @staticmethod
     def input_err(message: str) -> dict:
         return {

@@ -52,4 +52,4 @@ class MatchNewController(BaseController):
                 logging.error(f"Ошибка базы данных или сервера")
                 return Responses.initial_err(result.unwrap_err().message)
             
-        return Responses.success(data=result.unwrap().to_formatted_dict())
+        return Responses.redirect(url=f"/match-score?uuid={dto.uuid}")

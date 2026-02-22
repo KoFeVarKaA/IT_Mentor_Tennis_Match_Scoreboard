@@ -28,7 +28,8 @@ class MatchesService():
             dto.player1.id = player1.id
             dto.player2.id = player2.id
 
-            self.dao_mathes.insert(dto)
+            match = self.dao_mathes.insert(dto)
+            dto.uuid = match.uuid
             return Ok(dto)
         except SQLAlchemyError as e:
             logging.debug(f"Ошибка базы данных: {e}")
