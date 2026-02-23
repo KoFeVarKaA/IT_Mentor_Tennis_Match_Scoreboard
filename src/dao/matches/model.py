@@ -1,8 +1,9 @@
 from typing import Optional
 import uuid
 from sqlalchemy import UUID, ForeignKey
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+from src.dao.players.model import Players
 from database import Base
 
 class Matches(Base):
@@ -24,3 +25,7 @@ class Matches(Base):
     player2 : Mapped[int] = mapped_column(ForeignKey('players.id'))
     winner : Mapped[Optional[int]] = mapped_column(ForeignKey('players.id'), nullable=True)
     score : Mapped[str]
+
+    player1_obj: Mapped["Players"] = relationship(foreign_keys=[player1])
+    player2_obj: Mapped["Players"] = relationship(foreign_keys=[player2])
+    winner_obj: Mapped[Optional["Players"]] = relationship(foreign_keys=[winner])

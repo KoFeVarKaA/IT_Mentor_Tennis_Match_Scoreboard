@@ -1,12 +1,13 @@
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
-from dto.dto_match import MatchDTO
+from src.dto.dto_matches import MatchesDTO
+from src.dto.dto_match import MatchDTO
 
 
 class Render():
     def __init__(self):
         env = Environment(
-            loader=FileSystemLoader('templates'),
+            loader=FileSystemLoader('src/view/templates'),
             autoescape=select_autoescape(['html'])
             )
         self.match_score = env.get_template('match-score.html')
@@ -17,6 +18,6 @@ class Render():
     def render_match_score(self, dto: MatchDTO):
         pass
 
-    def render_matches(self, dto: MatchDTO):
+    def render_matches(self, dto: MatchesDTO):
         pass
     
