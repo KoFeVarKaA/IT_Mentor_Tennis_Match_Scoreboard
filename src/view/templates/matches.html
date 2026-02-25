@@ -23,7 +23,7 @@
         <div>
             <nav class="nav-links">
                 <a class="nav-link" href="/">Главная</a>
-                <a class="nav-link" href="/matches">Матчи</a>
+                <a class="nav-link" href="/matches?page=1">Матчи</a>
             </nav>
         </div>
     </section>
@@ -32,9 +32,16 @@
     <div class="container">
         <h1>Законченные матчи</h1>
         <div class="input-container">
-            <input class="input-filter" placeholder="Поиск по имени" type="text" />
-            <div>
-                <a href="/matches">
+            
+            {% if dto.filter_by_name %}
+                <input id="playerNameFilter" class="input-filter" value="{{ dto.filter_by_name }}" type="text" />
+            {% else %}
+                <input id="playerNameFilter" class="input-filter" placeholder="Поиск по имени" type="text" />
+            {% endif %}
+
+            <div class="button-group">
+                    <button id="searchButton" class="btn-filter">Поиск</button>
+                <a href="/matches?page=1">
                     <button class="btn-filter">Сброс</button>
                 </a>
             </div>
@@ -42,36 +49,44 @@
 
         <table class="table-matches">
             <tr>
-                <th>Player One</th>
-                <th>Player Two</th>
-                <th>Winner</th>
+                <th>Первый игрок</th>
+                <th>Второй игрок</th>
+                <th>Счет</th>
+                <th>Победитель</th>
             </tr>
-            {% for match in matches %}
+            {% for match in dto.matches %}
             <tr>
-                <td>{{ match.player_one }}</td>
-                <td>{{ match.player_two }}</td>
-                <td><span class="winner-name-td">{{ match.winner }}</span></td>
+                <td>{{ match.player1.name }}</td>
+                <td>{{ match.player2.name }}</td>
+                <td>{{ match.score }}</td>
+                <td>
+                    {% if match.winner.id %}
+                        <span class="winner-name-td">{{ match.winner.name }}</span>
+                    {% else %}
+                        <span class="winner-name-td">В процессе</span>
+                    {% endif %}
+                </td>
             </tr>
             {% endfor %}
         </table>
 
         <div class="pagination">
-            {% if pagination.prev_page %}
-                <a class="prev" href="{{ pagination.prev_page.url }}"> &lt; </a>
+            {% if dto.page > 1 %}
+                <a class="prev" href="/matches?page={{ dto.page - 1 }}{% if dto.filter_by_name %}&filter_by_name={{ dto.filter_by_name }}{% endif %}"> &lt; </a>
             {% else %}
                 <a class="prev disabled" href="#"> &lt; </a>
             {% endif %}
 
-            {% for page in pagination.pages %}
-                {% if page.is_current %}
-                    <a class="num-page current" href="{{ page.url }}">{{ page.number }}</a>
+            {% for page_num in range(1, (dto.total_matches_count // 5) + 2) %}
+                {% if page_num == dto.page %}
+                    <a class="num-page current" href="/matches?page={{ page_num }}{% if dto.filter_by_name %}&filter_by_name={{ dto.filter_by_name }}{% endif %}">{{ page_num }}</a>
                 {% else %}
-                    <a class="num-page" href="{{ page.url }}">{{ page.number }}</a>
+                    <a class="num-page" href="/matches?page={{ page_num }}{% if dto.filter_by_name %}&filter_by_name={{ dto.filter_by_name }}{% endif %}">{{ page_num }}</a>
                 {% endif %}
             {% endfor %}
 
-            {% if pagination.next_page %}
-                <a class="next" href="{{ pagination.next_page.url }}"> &gt; </a>
+            {% if dto.page * 5 < dto.total_matches_count %}
+                <a class="next" href="/matches?page={{ dto.page + 1 }}{% if dto.filter_by_name %}&filter_by_name={{ dto.filter_by_name }}{% endif %}"> &gt; </a>
             {% else %}
                 <a class="next disabled" href="#"> &gt; </a>
             {% endif %}

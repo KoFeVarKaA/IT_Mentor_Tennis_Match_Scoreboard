@@ -41,6 +41,6 @@ class MatchesController(BaseController):
                 logging.error(f"Ошибка базы данных или сервера")
                 return Responses.initial_err(result.unwrap_err().message)
             
-        return Responses.success(data=self.render.matches(dto))
+        return Responses.success(data=self.render.render_matches(dto))
     
     

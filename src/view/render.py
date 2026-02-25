@@ -19,5 +19,4 @@ class Render():
         pass
 
     def render_matches(self, dto: MatchesDTO):
-        pass
-    
+        return self.matches.render(dto=dto.to_dict()).encode('utf-8')

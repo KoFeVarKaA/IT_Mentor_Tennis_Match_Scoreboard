@@ -11,7 +11,7 @@ class MatchDTO():
     player1 : PlayerDTO = PlayerDTO()
     player2 : PlayerDTO = PlayerDTO()
     winner : PlayerDTO = PlayerDTO()
-    score : str = "None"
+    score : str = "0:0"
 
     def into_model(self) -> Matches:
         return Matches(

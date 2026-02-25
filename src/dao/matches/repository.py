@@ -54,17 +54,22 @@ class MatchesRepository():
     @staticmethod
     def get_matches_count(player_name: str = None) -> int:
         with session_factory() as session:
-            query = select(func.count()).select_from(Matches).join(
-                Players, or_(
-                    Matches.player1 == Players.id,
-                    Matches.player2 == Players.id,
-                    Matches.winner == Players.id
+            query = (
+                select(func.count(Matches.id.distinct()))
+                .select_from(Matches)
+                .join(
+                    Players,
+                    or_(
+                        Matches.player1 == Players.id,
+                        Matches.player2 == Players.id,
+                        Matches.winner == Players.id
+                    )
                 )
             )
             if player_name:
                 query = query.filter(Players.name.ilike(f"%{player_name}%"))
-            total_matches = session.scalars(query).first()
-        return  total_matches
+            total_matches = session.scalar(query)
+        return total_matches
     
     @staticmethod
     def insert(dto : MatchDTO) -> Matches:

@@ -24,12 +24,12 @@ class MatchesService():
         try:
             if dto.filter_by_name: 
                 matches = self.dao_mathes.get_matches(
-                        player_name=dto.filter_by_name, offset=dto.page*5, limit=dto.page*5+5)
+                        player_name=dto.filter_by_name, offset=(dto.page-1)*5, limit=(dto.page-1)*5+5)
                 dto.total_matches_count = self.dao_mathes.get_matches_count(
                         player_name=dto.filter_by_name)
             else:
                 matches = self.dao_mathes.get_matches(
-                                                        offset=dto.page*5, limit=dto.page*5+5)
+                                                        offset=(dto.page-1)*5, limit=(dto.page-1)*5+5)
                 dto.total_matches_count = self.dao_mathes.get_matches_count()
                 
             for match in matches:

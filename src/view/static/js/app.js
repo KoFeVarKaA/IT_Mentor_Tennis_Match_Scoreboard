@@ -7,3 +7,25 @@ document.addEventListener("DOMContentLoaded", function () {
         navLinks.classList.toggle("active");
     });
 });
+
+
+document.addEventListener("DOMContentLoaded", function() {
+    const inputFilter = document.getElementById("playerNameFilter");
+    const searchButton = document.getElementById("searchButton");
+
+    searchButton.addEventListener("click", function() {
+        const playerName = inputFilter.value.trim();
+        if (playerName) {
+            window.location.href = `/matches?page=1&filter_by_player_name=${encodeURIComponent(playerName)}`;
+        }
+    });
+    
+   inputFilter.addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+            const playerName = inputFilter.value.trim();
+            if (playerName) {
+                window.location.href = `/matches?page=1&filter_by_player_name=${encodeURIComponent(playerName)}`;
+            }
+        }
+    })
+});
