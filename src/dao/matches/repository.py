@@ -31,6 +31,7 @@ class MatchesRepository():
         with session_factory() as session:
             query = (
                 select(Matches)
+                .distinct()
                 .join(
                     Players, or_(
                         Matches.player1 == Players.id,

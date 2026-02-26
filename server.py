@@ -100,7 +100,7 @@ class Server(BaseHTTPRequestHandler):
         if mime_type is None:
             mime_type = "application/octet-stream"  
 
-        logging.info("Запрос успешно выполнен")
+        # logging.info("Запрос успешно выполнен")
         self.send_response(200)
         self.send_header("Content-Type", mime_type)
         self.send_header("Cache-Control", "no-cache")

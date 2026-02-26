@@ -16,7 +16,7 @@ document.addEventListener("DOMContentLoaded", function() {
     searchButton.addEventListener("click", function() {
         const playerName = inputFilter.value.trim();
         if (playerName) {
-            window.location.href = `/matches?page=1&filter_by_player_name=${encodeURIComponent(playerName)}`;
+            window.location.href = `/matches?page=1&filter_by_name=${encodeURIComponent(playerName)}`;
         }
     });
     
@@ -24,7 +24,7 @@ document.addEventListener("DOMContentLoaded", function() {
         if (event.key === "Enter") {
             const playerName = inputFilter.value.trim();
             if (playerName) {
-                window.location.href = `/matches?page=1&filter_by_player_name=${encodeURIComponent(playerName)}`;
+                window.location.href = `/matches?page=1&filter_by_name=${encodeURIComponent(playerName)}`;
             }
         }
     })

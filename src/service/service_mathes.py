@@ -1,6 +1,6 @@
 import logging
 from result import Result, Ok, Err
-from sqlalchemy.exc import SQLAlchemyError
+from sqlalchemy.exc import OperationalError, SQLAlchemyError
 
 from src.dao.matches.model import Matches
 from src.dto.dto_player import PlayerDTO
@@ -35,6 +35,9 @@ class MatchesService():
             for match in matches:
                 dto.matches.append(self._to_dto(match))
             return Ok(matches)
+        except OperationalError as e:
+            logging.debug(f"Ошибка базы данных: Проверьте подключение к бд \n {e}")
+            return Err(InitialError())
         except SQLAlchemyError as e:
             logging.debug(f"Ошибка базы данных: {e}")
             return Err(InitialError())

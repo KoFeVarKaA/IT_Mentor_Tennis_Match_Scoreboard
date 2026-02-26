@@ -20,8 +20,8 @@ class MatchesController(BaseController):
     def do_GET(self, path, query):
         try:
             page=int(query["page"][0])
-            if "filter_by_player_name" in query:
-                filter_by_name=query["filter_by_player_name"][0]
+            if "filter_by_name" in query:
+                filter_by_name=query["filter_by_name"][0]
             else:
                 filter_by_name=None
 
@@ -38,7 +38,6 @@ class MatchesController(BaseController):
 
         if result.is_err():
             if isinstance(result.unwrap_err(), InitialError):
-                logging.error(f"Ошибка базы данных или сервера")
                 return Responses.initial_err(result.unwrap_err().message)
             
         return Responses.success(data=self.render.render_matches(dto))
