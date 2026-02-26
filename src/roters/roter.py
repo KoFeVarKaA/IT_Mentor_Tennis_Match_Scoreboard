@@ -12,7 +12,8 @@ def controller_factory():
     return {
         "": MainController(),
         "new-match": MatchNewController(service=MatchesService(MatchesRepository, PlayersRepository)),
-        "match-score": MatchScoreController(service=MatchesService(MatchesRepository, PlayersRepository)),
+        "match-score": MatchScoreController(
+            service=MatchesService(MatchesRepository, PlayersRepository), render=Render()),
         "matches": MatchesController(
             service=MatchesService(MatchesRepository, PlayersRepository), render=Render()),   
     }

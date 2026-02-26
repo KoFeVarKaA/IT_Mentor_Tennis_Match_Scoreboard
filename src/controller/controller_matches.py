@@ -30,9 +30,9 @@ class MatchesController(BaseController):
                 filter_by_name=filter_by_name
             )
         except KeyError:
-            logging.error("Ошибка ввода. Неправильный формат запроса")
-            return Responses.input_err(
-                message="Ошибка ввода. Неправильный формат запроса")
+            message = "Ошибка ввода. Неправильный формат запроса"
+            logging.error(message)
+            return Responses.input_err(message=message)
 
         result = self.service.get_matches(dto)
 

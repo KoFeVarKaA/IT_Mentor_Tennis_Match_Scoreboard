@@ -23,6 +23,27 @@ class MatchesRepository():
             return matches
         
     @staticmethod
+    def get_match(uuid: str) -> Matches:
+        with session_factory() as session:
+            query = (
+                select(Matches)
+                .join(
+                    Players, or_(
+                        Matches.player1 == Players.id,
+                        Matches.player2 == Players.id,
+                        Matches.winner == Players.id
+                    ))
+                .options(
+                    joinedload(Matches.player1_obj),  
+                    joinedload(Matches.player2_obj),  
+                    joinedload(Matches.winner_obj),   
+                )
+                .where(Matches.uuid == uuid)
+            )
+            match = session.scalars(query).first()
+            return match
+
+    @staticmethod
     def get_matches(
                 offset: int = 0, 
                 limit: int = 10, 

@@ -20,7 +20,15 @@ class MatchesService():
         self.dao_mathes = repository_mathes
         self.dao_players = repository_players
 
-    def get_matches(self, dto: MatchesDTO)-> Result[MatchesDTO, InitialError]:
+    def get_match(self, dto: MatchDTO)-> Result[None, InitialError]:
+        try:
+            dto = self._to_dto(self.dao_mathes.get_match(dto.uuid))
+            return Ok()
+        
+        except Exception as e:
+            return self._error_processing(e)
+        
+    def get_matches(self, dto: MatchesDTO)-> Result[None, InitialError]:
         try:
             if dto.filter_by_name: 
                 matches = self.dao_mathes.get_matches(
@@ -34,13 +42,9 @@ class MatchesService():
                 
             for match in matches:
                 dto.matches.append(self._to_dto(match))
-            return Ok(matches)
-        except OperationalError as e:
-            logging.debug(f"Ошибка базы данных: Проверьте подключение к бд \n {e}")
-            return Err(InitialError())
-        except SQLAlchemyError as e:
-            logging.debug(f"Ошибка базы данных: {e}")
-            return Err(InitialError())
+            return Ok()
+        except Exception as e:
+            return self._error_processing(e)
 
 
     def post_new_match(self, dto: MatchDTO) -> Result[MatchDTO, InitialError]:
@@ -57,10 +61,18 @@ class MatchesService():
             match = self.dao_mathes.insert(dto)
             dto.uuid = match.uuid
             return Ok(dto)
-        except SQLAlchemyError as e:
-            logging.debug(f"Ошибка базы данных: {e}")
-            return Err(InitialError())
+        except Exception as e:
+            return self._error_processing(e)
 
+
+    def _error_processing(self, error: Exception):
+        if isinstance(error, OperationalError):
+            logging.debug(f"Ошибка базы данных: Проверьте подключение к бд \n {error}")
+            return Err(InitialError())
+        elif isinstance(error, SQLAlchemyError):
+            logging.debug(f"Ошибка базы данных: {error}")
+            return Err(InitialError())
+        
     def _to_dto(self, match: Matches):
         return MatchDTO(
             id = match.id,
