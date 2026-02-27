@@ -20,15 +20,16 @@ class MatchesService():
         self.dao_mathes = repository_mathes
         self.dao_players = repository_players
 
-    def get_match(self, dto: MatchDTO)-> Result[None, InitialError]:
+    def get_match(self, dto: MatchDTO)-> Result[MatchDTO, InitialError]:
         try:
             dto = self._to_dto(self.dao_mathes.get_match(dto.uuid))
-            return Ok()
+            dto.score_dict = self._score_to_score_dict(dto.score)
+            return Ok(dto)
         
         except Exception as e:
             return self._error_processing(e)
         
-    def get_matches(self, dto: MatchesDTO)-> Result[None, InitialError]:
+    def get_matches(self, dto: MatchesDTO)-> Result[MatchesDTO, InitialError]:
         try:
             if dto.filter_by_name: 
                 matches = self.dao_mathes.get_matches(
@@ -42,7 +43,20 @@ class MatchesService():
                 
             for match in matches:
                 dto.matches.append(self._to_dto(match))
-            return Ok()
+            return Ok(dto)
+        except Exception as e:
+            return self._error_processing(e)
+        
+    def post_match_score(self, dto: MatchDTO) -> Result[MatchDTO, InitialError]:
+        try:
+            dto = self._to_dto(self.dao_mathes.get_match(dto.uuid))
+            dto.score_dict = self._score_to_score_dict(dto.score)
+            # dto = self._render_score(dto)
+            
+            
+            dto.score = self._score_dict_to_score(dto.score_dict)
+            dto = self.dao_mathes.update_score(dto)
+            return Ok(dto)
         except Exception as e:
             return self._error_processing(e)
 
@@ -84,3 +98,18 @@ class MatchesService():
                 if match.winner_obj else PlayerDTO()),
             score = match.score,
         )
+    
+    def _score_to_score_dict(score: str) -> dict:
+        score_split = [score.split(" ")[0].split(":"), score.split(" ")[0].split(":")]
+        return {
+            "player1_sets" : score_split[0][0],
+            "player1_games" : score_split[0][1],
+            "player1_points" : score_split[0][2],
+            "player2_sets" : score_split[1][0],
+            "player2_games" : score_split[1][1],
+            "player2_points" : score_split[1][2],
+        }
+
+    def _score_dict_to_score(score_dict: dict) -> str:
+        return (f"{score_dict["player1_sets"]}:{score_dict["player1_games"]}:{score_dict["player1_points"]} " +
+                f"{score_dict["player2_sets"]}:{score_dict["player2_games"]}:{score_dict["player2_points"]}")

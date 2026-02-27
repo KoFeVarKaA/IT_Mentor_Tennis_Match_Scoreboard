@@ -32,8 +32,10 @@
 </header>
 <main>
     <div class="container">
-        <h1>Матчи</h1>
-        <div class="current-match-image"></div>
+        <h1 style="text-align: center;">Победитель</h1>
+        <h2 style="text-align: center;">Победитель матча:</h2>
+        <div style="text-align: center;" class="winner-name">{{ dto.winner.name }}</div>
+        <h3>Итоговый счёт:</h3>
         <section class="score">
             <table class="table">
                 <thead class="result">
@@ -51,9 +53,6 @@
                         <td class="table-text">{{ dto.score_dict["player1_sets"] }}</td>
                         <td class="table-text">{{ dto.score_dict["player1_games"] }}</td>
                         <td class="table-text">{{ dto.score_dict["player1_points"] }}</td>
-                        <td class="table-text">
-                            <div class="score-btn">+ 1 очко</div>
-                        </td>
                     </tr>
 
                     <tr class="player2">
@@ -61,10 +60,6 @@
                         <td class="table-text">{{ dto.score_dict["player2_sets"] }}</td>
                         <td class="table-text">{{ dto.score_dict["player2_games"] }}</td>
                         <td class="table-text">{{ dto.score_dict["player2_points"] }}</td>
-                        <td class="table-text">
-                            <div class="score-btn">+ 1 очко</div>
-                        </td>
-                    </tr>
                  </tbody>
             </table>
         </section>

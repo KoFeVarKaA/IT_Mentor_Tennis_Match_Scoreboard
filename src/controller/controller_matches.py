@@ -39,7 +39,6 @@ class MatchesController(BaseController):
         if result.is_err():
             if isinstance(result.unwrap_err(), InitialError):
                 return Responses.initial_err(result.unwrap_err().message)
-            
+
         return Responses.success(data=self.render.render_matches(dto))
-    
     

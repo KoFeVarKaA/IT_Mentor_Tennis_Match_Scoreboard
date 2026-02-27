@@ -17,6 +17,7 @@ class MatchScoreController(BaseController):
         self.service = service
         self.render = render
 
+
     def do_GET(self, path, query):
         try:
             uuid=query["uuid"][0]
@@ -30,9 +31,33 @@ class MatchScoreController(BaseController):
             return Responses.input_err(message=message)
 
         result = self.service.get_match(dto)
-
         if result.is_err():
             if isinstance(result.unwrap_err(), InitialError):
                 return Responses.initial_err(result.unwrap_err().message)
-            
-        return Responses.success(data=self.render.render_matches(dto))
+        return Responses.success(data=self.render.render_matches(result.unwrap()))
+    
+    
+    def do_POST(self, path, query):
+        try:
+            uuid=query["uuid"][0]
+
+            dto = MatchDTO(
+                uuid = uuid
+            )
+        except KeyError:
+            message = "Ошибка ввода. Неправильный формат запроса"
+            logging.error(message)
+            return Responses.input_err(message=message)
+
+        result = self.service.post_match_score(dto)
+        if result.is_err():
+            if isinstance(result.unwrap_err(), InitialError):
+                return Responses.initial_err(result.unwrap_err().message)
+        if dto.winner:
+            return Responses.success(data=self.render.render_winner(result.unwrap()))
+        return Responses.success(data=self.render.render_matches(result.unwrap()))
+        
+        
+
+    
+        
