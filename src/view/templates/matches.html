@@ -53,6 +53,7 @@
                 <th>Второй игрок</th>
                 <th>Счет</th>
                 <th>Победитель</th>
+                <th></th>
             </tr>
             {% for match in dto.matches %}
             <tr>
@@ -66,6 +67,9 @@
                         <span class="winner-name-td">В процессе</span>
                     {% endif %}
                 </td>
+                <td><a href="/match-score?uuid={{match.uuid}}">
+                    <button class="bth-to-match">К матчу</button>
+                </a></td>
             </tr>
             {% endfor %}
         </table>

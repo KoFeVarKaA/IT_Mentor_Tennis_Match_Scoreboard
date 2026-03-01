@@ -12,11 +12,14 @@ class Render():
             )
         self.match_score = env.get_template('match-score.html')
         self.matches = env.get_template('matches.html')
+        self.winner = env.get_template('winner.html')
 
-    
+
+    def render_winner(self, dto: MatchDTO):
+        return self.winner.render(dto=dto.to_dict()).encode('utf-8')
 
     def render_match_score(self, dto: MatchDTO):
-        pass
+        return self.match_score.render(dto=dto.to_dict()).encode('utf-8')
 
     def render_matches(self, dto: MatchesDTO):
         return self.matches.render(dto=dto.to_dict()).encode('utf-8')

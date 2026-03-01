@@ -216,6 +216,19 @@ footer {
     cursor: pointer;
 }
 
+.bth-to-match {
+    width: auto;
+    padding: 8px 12px;
+    line-height: normal;
+    margin-left: 5px;
+    border-radius: 12px;
+    border: none;
+    background-color: #42a7f5;
+    color: #fff;
+    cursor: pointer;
+    font-size: 16px;
+}
+
 .button-group {
     display: flex;  
     gap: 5px;      
@@ -477,6 +490,12 @@ footer {
 
 .table-matches tr td:last-child, .table-matches tr th:last-child {
     border-right: none;
+}
+
+.table-matches td:last-child {
+    padding: 5px;
+    width: 1%;
+    white-space: nowrap;
 }
 
 .winner-name-td {

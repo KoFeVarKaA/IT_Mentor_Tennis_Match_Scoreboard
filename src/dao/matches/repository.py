@@ -94,6 +94,13 @@ class MatchesRepository():
         return total_matches
     
     @staticmethod
+    def update_score(dto:MatchDTO) -> None:
+        with session_factory() as session:
+            match = session.get(Matches, dto.uuid)
+            Matches.score = dto.score
+            session.commit()
+    
+    @staticmethod
     def insert(dto : MatchDTO) -> Matches:
         match = dto.into_model()
         with session_factory() as session:

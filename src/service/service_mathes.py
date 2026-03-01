@@ -23,7 +23,7 @@ class MatchesService():
     def get_match(self, dto: MatchDTO)-> Result[MatchDTO, InitialError]:
         try:
             dto = self._to_dto(self.dao_mathes.get_match(dto.uuid))
-            dto.score_dict = self._score_to_score_dict(dto.score)
+            dto.score_to_score_dict()
             return Ok(dto)
         
         except Exception as e:
@@ -50,11 +50,9 @@ class MatchesService():
     def post_match_score(self, dto: MatchDTO) -> Result[MatchDTO, InitialError]:
         try:
             dto = self._to_dto(self.dao_mathes.get_match(dto.uuid))
-            dto.score_dict = self._score_to_score_dict(dto.score)
-            # dto = self._render_score(dto)
-            
-            
-            dto.score = self._score_dict_to_score(dto.score_dict)
+            dto.score_to_score_dict()
+            dto = self._render_score(dto)
+            dto.score_dict_to_score()
             dto = self.dao_mathes.update_score(dto)
             return Ok(dto)
         except Exception as e:
@@ -86,6 +84,9 @@ class MatchesService():
         elif isinstance(error, SQLAlchemyError):
             logging.debug(f"Ошибка базы данных: {error}")
             return Err(InitialError())
+        else:
+            logging.debug(f"Ошибка в процессе выполнения программы: {error}")
+            return Err(InitialError())
         
     def _to_dto(self, match: Matches):
         return MatchDTO(
@@ -99,17 +100,53 @@ class MatchesService():
             score = match.score,
         )
     
-    def _score_to_score_dict(score: str) -> dict:
-        score_split = [score.split(" ")[0].split(":"), score.split(" ")[0].split(":")]
-        return {
-            "player1_sets" : score_split[0][0],
-            "player1_games" : score_split[0][1],
-            "player1_points" : score_split[0][2],
-            "player2_sets" : score_split[1][0],
-            "player2_games" : score_split[1][1],
-            "player2_points" : score_split[1][2],
-        }
+    def _render_score(dto: MatchDTO) -> MatchDTO:
+        def reset_points():
+            dto.score_dict["player1_points"] = 0
+            dto.score_dict["player2_points"] = 0
 
-    def _score_dict_to_score(score_dict: dict) -> str:
-        return (f"{score_dict["player1_sets"]}:{score_dict["player1_games"]}:{score_dict["player1_points"]} " +
-                f"{score_dict["player2_sets"]}:{score_dict["player2_games"]}:{score_dict["player2_points"]}")
+        player = f"player{dto.add_point}"
+        opponent = f"player{1 if player == 2 else 2}" 
+        points_line = {0 : 15, 15: 30, 30: 40}
+        
+        # Логика очков
+        points1, points2 = dto.score_dict[f"{player}_points"], dto.score_dict[f"{opponent}_points"]
+
+        if points1 in points_line:
+            dto.score_dict[f"{player}_points"] = points_line[points1]
+            if dto.score_dict[f"{player}_points"] == dto.score_dict[f"{opponent}_points"] == 40:
+                dto.score_dict[f"{player}_points"] = dto.score_dict[f"{opponent}_points"] = "Равно"
+
+        elif points1 == 40 or points1 == "Преимущество":
+            dto.score_dict[f"{player}_games"] += 1
+            reset_points()
+
+        elif points1 == "Равно":
+            dto.score_dict[f"{player}_points"] = "Преимущество"
+            dto.score_dict[f"{opponent}_points"] = 40
+
+        else: #points1[:9] == "Тай-брейк"
+            points1, points2 = int(points1[11: ]) + 1, int(points2[11: ])
+            if points1 - points2 == 2:
+                dto.score_dict[f"{player}_games"] += 1 
+                reset_points()
+            dto.score_dict[f"{player}_points"] = f"Тай-брейк, {points1}"
+        
+
+        # Логика геймов
+        games1, games2 = dto.score_dict[f"{player}_games"], dto.score_dict[f"{opponent}_games"]
+        if games1 == games2:
+            dto.score_dict[f"{player}_points"] = dto.score_dict[f"{opponent}_points"] = "Тай-брейк, 0"
+        elif games1 >= 6:
+            if games1 - games2 >= 2:
+                dto.score_dict[f"{player}_sets"] += 1
+                dto.score_dict["player1_games"] = 0
+                dto.score_dict["player2_games"] = 0
+
+        # Логика победы
+        if dto.score_dict["player1_sets"] == 2:
+            dto.winner = dto.player1
+        elif dto.score_dict["player2_sets"] == 2:
+            dto.winner = dto.player2
+
+        return dto
