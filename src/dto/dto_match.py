@@ -15,10 +15,10 @@ class MatchDTO():
     score_dict : dict[str, int] = field(default_factory=lambda: {
             "player1_sets": 0,
             "player1_games": 0,
-            "player1_points": 0,
+            "player1_points": "0",
             "player2_sets": 0,
             "player2_games": 0,
-            "player2_points": 0,
+            "player2_points": "0",
         }) 
     add_point : int = None
 

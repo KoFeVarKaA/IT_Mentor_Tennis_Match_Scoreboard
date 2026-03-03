@@ -111,8 +111,8 @@ class MatchesService():
     
     def _render_score(self, dto: MatchDTO) -> MatchDTO:
         def reset_points():
-            dto.score_dict["player1_points"] = 0
-            dto.score_dict["player2_points"] = 0
+            dto.score_dict["player1_points"] = "0"
+            dto.score_dict["player2_points"] = "0"
 
         player = f"player{dto.add_point}"
         opponent = f"player{1 if dto.add_point == 2 else 2}" 
@@ -120,6 +120,7 @@ class MatchesService():
         
         # Логика очков
         points1, points2 = dto.score_dict[f"{player}_points"], dto.score_dict[f"{opponent}_points"]
+        is_tie_break = False
 
         if points1 in points_line:
             dto.score_dict[f"{player}_points"] = points_line[points1]
