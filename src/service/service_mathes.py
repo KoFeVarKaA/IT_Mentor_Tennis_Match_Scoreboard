@@ -49,11 +49,15 @@ class MatchesService():
         
     def post_match_score(self, dto: MatchDTO) -> Result[MatchDTO, InitialError]:
         try:
+            add_point = dto.add_point
             dto = self._to_dto(self.dao_mathes.get_match(dto.uuid))
+            if dto.winner.id:
+                return Ok(dto) #Обработка ложных запросов
+            dto.add_point = add_point
             dto.score_to_score_dict()
             dto = self._render_score(dto)
             dto.score_dict_to_score()
-            dto = self.dao_mathes.update_score(dto)
+            self.dao_mathes.update_score(dto)
             return Ok(dto)
         except Exception as e:
             return self._error_processing(e)
@@ -75,7 +79,12 @@ class MatchesService():
             return Ok(dto)
         except Exception as e:
             return self._error_processing(e)
-
+        
+    def post_match_winner(self, dto: MatchDTO) -> Result[MatchDTO, InitialError]:
+        try:
+            self.dao_mathes.update_winner(dto)
+        except Exception as e:
+            return self._error_processing(e)
 
     def _error_processing(self, error: Exception):
         if isinstance(error, OperationalError):
@@ -100,43 +109,50 @@ class MatchesService():
             score = match.score,
         )
     
-    def _render_score(dto: MatchDTO) -> MatchDTO:
+    def _render_score(self, dto: MatchDTO) -> MatchDTO:
         def reset_points():
             dto.score_dict["player1_points"] = 0
             dto.score_dict["player2_points"] = 0
 
         player = f"player{dto.add_point}"
-        opponent = f"player{1 if player == 2 else 2}" 
-        points_line = {0 : 15, 15: 30, 30: 40}
+        opponent = f"player{1 if dto.add_point == 2 else 2}" 
+        points_line = {"0" : "15", "15": "30", "30": "40"}
         
         # Логика очков
         points1, points2 = dto.score_dict[f"{player}_points"], dto.score_dict[f"{opponent}_points"]
 
         if points1 in points_line:
             dto.score_dict[f"{player}_points"] = points_line[points1]
-            if dto.score_dict[f"{player}_points"] == dto.score_dict[f"{opponent}_points"] == 40:
-                dto.score_dict[f"{player}_points"] = dto.score_dict[f"{opponent}_points"] = "Равно"
+            if dto.score_dict[f"{player}_points"] == '40' and dto.score_dict[f"{opponent}_points"] == "40":
+                dto.score_dict[f"{player}_points"] = "Равно"
+                dto.score_dict[f"{opponent}_points"] = "Равно"  
 
-        elif points1 == 40 or points1 == "Преимущество":
+        elif points1 == "40" or points1 == "Больше":
             dto.score_dict[f"{player}_games"] += 1
             reset_points()
 
         elif points1 == "Равно":
-            dto.score_dict[f"{player}_points"] = "Преимущество"
-            dto.score_dict[f"{opponent}_points"] = 40
+            dto.score_dict[f"{player}_points"] = "Больше"
+            dto.score_dict[f"{opponent}_points"] = "Меньше"
+
+        elif points1 == "Меньше":
+            dto.score_dict[f"{player}_points"] = "Равно"
+            dto.score_dict[f"{opponent}_points"] = "Равно"   
 
         else: #points1[:9] == "Тай-брейк"
-            points1, points2 = int(points1[11: ]) + 1, int(points2[11: ])
-            if points1 - points2 == 2:
+            is_tie_break = True
+            points1, points2 = int(points1.split(",")[1]) + 1, int(points2.split(",")[1])
+            if points1 >= 7 and points1 - points2 >= 2:
                 dto.score_dict[f"{player}_games"] += 1 
                 reset_points()
-            dto.score_dict[f"{player}_points"] = f"Тай-брейк, {points1}"
+            else:
+                dto.score_dict[f"{player}_points"] = f"Тай-брейк,{points1}"
         
 
         # Логика геймов
-        games1, games2 = dto.score_dict[f"{player}_games"], dto.score_dict[f"{opponent}_games"]
-        if games1 == games2:
-            dto.score_dict[f"{player}_points"] = dto.score_dict[f"{opponent}_points"] = "Тай-брейк, 0"
+        games1, games2 = int(dto.score_dict[f"{player}_games"]), int(dto.score_dict[f"{opponent}_games"])
+        if games1 == 6 and games2 == 6 and not is_tie_break:
+            dto.score_dict[f"{player}_points"] = dto.score_dict[f"{opponent}_points"] = "Тай-брейк,0"
         elif games1 >= 6:
             if games1 - games2 >= 2:
                 dto.score_dict[f"{player}_sets"] += 1

@@ -34,13 +34,17 @@ class MatchScoreController(BaseController):
         if result.is_err():
             if isinstance(result.unwrap_err(), InitialError):
                 return Responses.initial_err(result.unwrap_err().message)
-        return Responses.success(data=self.render.render_match_score(result.unwrap()))
+        dto = result.unwrap()
+        if dto.winner.id:
+            result = self.service.post_match_winner(dto)
+            return Responses.success(data=self.render.render_winner(dto))
+        return Responses.success(data=self.render.render_match_score(dto))
     
     
-    def do_POST(self, path, query):
+    def do_POST(self, path, query, data):
         try:
             uuid=query["uuid"][0]
-            add_point = query[add_point][0]
+            add_point = int(query["add_point"][0])
             if add_point not in (1, 2):
                 message = "Ошибка ввода. Неправильный формат запроса. " \
                           "Добавить очко можно только 1 или 2 игроку"
@@ -56,13 +60,15 @@ class MatchScoreController(BaseController):
             logging.error(message)
             return Responses.input_err(message=message)
 
-        result = self.service.post_match_score(dto, add_point)
+        result = self.service.post_match_score(dto)
         if result.is_err():
             if isinstance(result.unwrap_err(), InitialError):
                 return Responses.initial_err(result.unwrap_err().message)
-        if dto.winner:
-            return Responses.success(data=self.render.render_winner(result.unwrap()))
-        return Responses.success(data=self.render.render_match_score(result.unwrap()))
+        dto = result.unwrap()
+        if dto.winner.id:
+            result = self.service.post_match_winner(dto)
+            return Responses.success(data=self.render.render_winner(dto))
+        return Responses.success(data=self.render.render_match_score(dto))
         
         
 

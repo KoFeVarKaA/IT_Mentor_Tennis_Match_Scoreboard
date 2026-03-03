@@ -49,11 +49,11 @@ class MatchDTO():
         score_split1 = score_split1.split(":")
         score_split2 = score_split2.split(":")
         self.score_dict = {
-            "player1_sets" : score_split1[0],
-            "player1_games" : score_split1[1],
+            "player1_sets" : int(score_split1[0]),
+            "player1_games" : int(score_split1[1]),
             "player1_points" : score_split1[2],
-            "player2_sets" : score_split2[0],
-            "player2_games" : score_split2[1],
+            "player2_sets" : int(score_split2[0]),
+            "player2_games" : int(score_split2[1]),
             "player2_points" : score_split2[2],
         }
 

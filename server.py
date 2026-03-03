@@ -64,7 +64,7 @@ class Server(BaseHTTPRequestHandler):
         if  command == "GET":
             response = handle_class.do_GET(path, query)
         elif command == "POST":
-            response = handle_class.do_POST(path, data)
+            response = handle_class.do_POST(path, query, data)
         self._send_response(response)
 
     def _send_response(self, response: dict):

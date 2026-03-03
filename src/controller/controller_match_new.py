@@ -25,6 +25,7 @@ class MatchNewController(BaseController):
     def do_POST(
             self, 
             path,
+            query,
             data: dict,
             ):
         try:

@@ -29,3 +29,25 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     })
 });
+
+document.addEventListener("DOMContentLoaded", function() {
+    document.querySelectorAll('.score-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const uuid = this.getAttribute('data-uuid');
+            const player = this.getAttribute('data-player');
+
+            fetch(`/match-score?uuid=${uuid}&add_point=${player}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                }
+            }) 
+            .then(response => response.text())
+            .then(html => {
+                document.open();
+                document.write(html);
+                document.close();
+            })           
+        });
+    });
+});

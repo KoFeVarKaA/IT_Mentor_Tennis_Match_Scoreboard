@@ -52,7 +52,7 @@
                         <td class="table-text">{{ dto.score_dict["player1_games"] }}</td>
                         <td class="table-text">{{ dto.score_dict["player1_points"] }}</td>
                         <td class="table-text">
-                            <div class="score-btn">+ 1 очко</div>
+                            <button class="score-btn" data-uuid="{{ dto.uuid }}" data-player="1">+ 1 очко</button>
                         </td>
                     </tr>
 
@@ -62,7 +62,7 @@
                         <td class="table-text">{{ dto.score_dict["player2_games"] }}</td>
                         <td class="table-text">{{ dto.score_dict["player2_points"] }}</td>
                         <td class="table-text">
-                            <div class="score-btn">+ 1 очко</div>
+                            <button class="score-btn" data-uuid="{{ dto.uuid }}" data-player="2">+ 1 очко</button>
                         </td>
                     </tr>
                  </tbody>

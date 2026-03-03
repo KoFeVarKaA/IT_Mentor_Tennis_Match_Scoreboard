@@ -51,7 +51,7 @@ class MatchesRepository():
         ) -> list[Matches]:
         with session_factory() as session:
             query = (
-                select(Matches)
+                select(Matches).order_by(Matches.id.desc())
                 .distinct()
                 .join(
                     Players, or_(
@@ -94,12 +94,25 @@ class MatchesRepository():
         return total_matches
     
     @staticmethod
-    def update_score(dto:MatchDTO) -> None:
+    def update_score(dto: MatchDTO) -> None:
         with session_factory() as session:
-            match = session.get(Matches, dto.uuid)
-            Matches.score = dto.score
-            session.commit()
+            match = session.query(Matches).filter(Matches.uuid == dto.uuid).first()
+            if match:
+                match.score = dto.score
+                session.commit()
+            else:
+                raise ValueError(f"Match with uuid {dto.uuid} not found")
     
+    @staticmethod
+    def update_winner(dto: MatchDTO) -> None:
+        with session_factory() as session:
+            match = session.query(Matches).filter(Matches.uuid == dto.uuid).first()
+            if match:
+                match.winner = dto.winner.id
+                session.commit()
+            else:
+                raise ValueError(f"Match with uuid {dto.uuid} not found")
+            
     @staticmethod
     def insert(dto : MatchDTO) -> Matches:
         match = dto.into_model()
