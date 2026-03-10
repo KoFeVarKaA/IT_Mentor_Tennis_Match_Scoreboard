@@ -33,7 +33,11 @@ class MatchNewController(BaseController):
             player2_name=data["playerTwo"][0]
 
             if len(player1_name) < 3 or len(player2_name) < 3:
-                message="Ошибка ввода. Длина имени игрока должна составлять 3 символа"
+                message="Ошибка ввода. Длина имени игрока должна составлять хотя бы 3 символа"
+                logging.error(message)
+                return Responses.input_err(message)
+            elif len(player1_name) >= 45 or len(player2_name) >= 45:
+                message="Ошибка ввода. Максимальная длина имени игрока - 45 символов"
                 logging.error(message)
                 return Responses.input_err(message)
 
