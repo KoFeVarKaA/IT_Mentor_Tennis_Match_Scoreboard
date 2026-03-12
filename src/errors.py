@@ -13,3 +13,6 @@ class ObjectAlreadyExists(Exception):
 class InitialError(Exception):
     def __init__(self):
         self.message = f"Ошибка сервера. Что то пошло не так"
+class InputError(Exception):
+    def __init__(self, message: str):
+        self.message = message

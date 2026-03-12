@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tennis Scoreboard | Главная</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/app.js"></script>
+    <style>
+        .back-button {
+            background-color: #e7e7e7;
+            color: #000000;
+            border: none;
+            padding: 0.55rem 1.3rem;
+            font-size: 1rem;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: background-color 0.3s;
+        }
+    </style>
+</head>
+
+<body>
+<header class="header">
+    <section class="nav-header">
+        <div class="brand">
+            <div class="nav-toggle">
+                <img src="images/menu.png" alt="Меню" class="logo" style="width: 30px; height: 30px;">
+            </div>
+            <span class="logo-text">TennisScoreboard</span>
+        </div>
+        <div>
+            <nav class="nav-links">
+                <a class="nav-link" href="/">Главная</a>
+                <a class="nav-link" href="/matches?page=1">Матчи</a>
+            </nav>
+        </div>
+    </section>
+</header>
+<main>
+    <div class="container">
+        <div class="error-container">
+            <h1>Ошибка {{ variables.status_code }}</h1>
+            <p class="error-description">
+                {{ variables.message }}
+            </p><br>
+            <a href="javascript:history.back()" class="back-button">Вернуться назад</a>
+        </div>
+    </div>
+</main>
+</body>
+</html>
