@@ -45,9 +45,9 @@
 <main>
     <div class="container">
         <div class="error-container">
-            <h1>Ошибка {{ variables.status_code }}</h1>
+            <h1>Ошибка {{ error_dict.status_code }}</h1>
             <p class="error-description">
-                {{ variables.message }}
+                {{ error_dict.message }}
             </p><br>
             <a href="javascript:history.back()" class="back-button">Вернуться назад</a>
         </div>

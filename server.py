@@ -5,6 +5,7 @@ import mimetypes
 import os
 from urllib.parse import parse_qs, urlparse
 from src.response import Responses
+from src.view.render import Render
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -70,22 +71,22 @@ class Server(BaseHTTPRequestHandler):
     def _send_response(self, response: dict):
         if 200 <= response["status_code"] <= 201:
             logging.info("Запрос успешно выполнен")
-
-            self.send_response(response["status_code"])
-            self.send_header("Content-Type", "text/html")
-            self.send_header("Cache-Control", "no-cache")
-            self.send_header("Access-Control-Allow-Origin", "*")
-            self.end_headers()
-
-            self.wfile.write(response["data"])
         
         elif 301 <= response["status_code"] <= 308:
             self.send_response(response["status_code"])
             self.send_header("Location", response["url"])
             self.end_headers()
+            return
         else:
-            logging.error(f"{response['data']['message']}")
-            self._send_error_response(response)
+            logging.error("Ошибка в ходе выполения запроса")
+
+        self.send_response(response["status_code"])
+        self.send_header("Content-Type", "text/html")
+        self.send_header("Cache-Control", "no-cache")
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.end_headers()
+
+        self.wfile.write(response["data"])
     
     def _send_response_static(self):
         file_path = os.path.join("src/view/static", self.path.lstrip("/"))
@@ -93,7 +94,14 @@ class Server(BaseHTTPRequestHandler):
         if not os.path.isfile(file_path):
             message = "Статичный файл не найден"
             logging.error(message)
-            self._send_error_response(Responses.initial_err(message))
+            response = Responses.initial_err(message)
+            self.send_response(response["status_code"])
+            self.send_header("Content-Type", "application/json")
+            self.end_headers()
+            response = {"code": str(response["status_code"]), 
+                        "status": "Ошибка", 
+                        "message": response["data"]["message"]}
+            self.wfile.write(json.dumps(response).encode("utf-8"))
             return
 
         mime_type, _ = mimetypes.guess_type(file_path)
@@ -108,13 +116,3 @@ class Server(BaseHTTPRequestHandler):
 
         with open(file_path, "rb") as file:
             self.wfile.write(file.read())
-
-    # переделать в всплывающее окно
-    def _send_error_response(self, response: dict):
-        self.send_response(response["status_code"])
-        self.send_header("Content-Type", "application/json")
-        self.end_headers()
-        response = {"code": str(response["status_code"]), 
-                    "status": "Ошибка", 
-                    "message": response["data"]["message"]}
-        self.wfile.write(json.dumps(response).encode("utf-8"))

@@ -5,12 +5,14 @@ from server import Server
 from http.server import HTTPServer
 
 from src.roters.roter import controller_factory
+from src.view.render import Render
 
 
 load_dotenv()
 
 host, port = os.getenv('SERVER_HOST'), int(os.getenv('SERVER_PORT'))
-server =  HTTPServer((host, port), lambda *args, **kwargs: Server(controller_factory(), *args, **kwargs))
+server =  HTTPServer((host, port), lambda *args, **kwargs: Server(
+                            controller_factory(), *args, **kwargs))
 
 if __name__ == "__main__":
     try:

@@ -1,6 +1,6 @@
-import logging
-from result import Result, Ok, Err
-from sqlalchemy.exc import OperationalError, SQLAlchemyError
+from math import ceil
+
+from result import Result, Ok
 
 from src.dao.matches.model import Matches
 from src.dto.dto_player import PlayerDTO
@@ -9,6 +9,7 @@ from src.dto.dto_matches import MatchesDTO
 from src.dto.dto_match import MatchDTO
 from src.dao.matches.repository import MatchesRepository
 from src.dao.players.repository import PlayersRepository
+from src.utils.exception_handlers import handle_servise_error
 
 
 class MatchesService():
@@ -20,82 +21,66 @@ class MatchesService():
         self.dao_mathes = repository_mathes
         self.dao_players = repository_players
 
+    @handle_servise_error 
     def get_match(self, dto: MatchDTO)-> Result[MatchDTO, InitialError]:
-        try:
-            dto = self._to_dto(self.dao_mathes.get_match(dto.uuid))
-            dto.score_to_score_dict()
-            return Ok(dto)
-        
-        except Exception as e:
-            return self._error_processing(e)
-        
+        dto = self._to_dto(self.dao_mathes.get_match(dto.uuid))
+        dto.score_to_score_dict()
+        return Ok(dto)
+
+    @handle_servise_error    
     def get_matches(self, dto: MatchesDTO)-> Result[MatchesDTO, InitialError]:
-        try:
-            if dto.filter_by_name: 
-                matches = self.dao_mathes.get_matches(
-                        player_name=dto.filter_by_name, offset=(dto.page-1)*5, limit=(dto.page-1)*5+5)
-                dto.total_matches_count = self.dao_mathes.get_matches_count(
-                        player_name=dto.filter_by_name)
-            else:
-                matches = self.dao_mathes.get_matches(
-                                                        offset=(dto.page-1)*5, limit=(dto.page-1)*5+5)
-                dto.total_matches_count = self.dao_mathes.get_matches_count()
-                
-            for match in matches:
-                dto.matches.append(self._to_dto(match))
-            return Ok(dto)
-        except Exception as e:
-            return self._error_processing(e)
-        
-    def post_match_score(self, dto: MatchDTO) -> Result[MatchDTO, InitialError]:
-        try:
-            add_point = dto.add_point
-            dto = self._to_dto(self.dao_mathes.get_match(dto.uuid))
-            if dto.winner.id:
-                return Ok(dto) #Обработка ложных запросов
-            dto.add_point = add_point
-            dto.score_to_score_dict()
-            dto = self._render_score(dto)
-            dto.score_dict_to_score()
-            self.dao_mathes.update_score(dto)
-            return Ok(dto)
-        except Exception as e:
-            return self._error_processing(e)
-
-
-    def post_new_match(self, dto: MatchDTO) -> Result[MatchDTO, InitialError]:
-        try:
-            player1 = self.dao_players.get_by_name(dto.player1.name)
-            if not player1:
-                player1 = self.dao_players.insert(dto.player1)
-            player2 = self.dao_players.get_by_name(dto.player2.name)
-            if not player2:
-                player2 = self.dao_players.insert(dto.player2)
-            dto.player1.id = player1.id
-            dto.player2.id = player2.id
-
-            match = self.dao_mathes.insert(dto)
-            dto.uuid = match.uuid
-            return Ok(dto)
-        except Exception as e:
-            return self._error_processing(e)
-        
-    def post_match_winner(self, dto: MatchDTO) -> Result[MatchDTO, InitialError]:
-        try:
-            self.dao_mathes.update_winner(dto)
-        except Exception as e:
-            return self._error_processing(e)
-
-    def _error_processing(self, error: Exception):
-        if isinstance(error, OperationalError):
-            logging.debug(f"Ошибка базы данных: Проверьте подключение к бд \n {error}")
-            return Err(InitialError())
-        elif isinstance(error, SQLAlchemyError):
-            logging.debug(f"Ошибка базы данных: {error}")
-            return Err(InitialError())
+        if dto.filter_by_name:
+            dto.total_matches_count = self.dao_mathes.get_matches_count(
+                    player_name=dto.filter_by_name)
         else:
-            logging.debug(f"Ошибка в процессе выполнения программы: {error}")
-            return Err(InitialError())
+            dto.total_matches_count = self.dao_mathes.get_matches_count()
+
+        total_pages = ceil(dto.total_matches_count / 5)
+        if dto.page > total_pages:
+            return Ok(dto)
+
+        if dto.filter_by_name: 
+            matches = self.dao_mathes.get_matches(
+                    player_name=dto.filter_by_name, offset=(dto.page-1)*5, limit=(dto.page-1)*5+5) 
+        else:
+            matches = self.dao_mathes.get_matches(
+                                                    offset=(dto.page-1)*5, limit=(dto.page-1)*5+5)
+            
+        for match in matches:
+            dto.matches.append(self._to_dto(match))
+        return Ok(dto)
+
+    @handle_servise_error 
+    def post_match_score(self, dto: MatchDTO) -> Result[MatchDTO, InitialError]:
+        add_point = dto.add_point
+        dto = self._to_dto(self.dao_mathes.get_match(dto.uuid))
+        if dto.winner.id:
+            return Ok(dto) #Обработка ложных запросов
+        dto.add_point = add_point
+        dto.score_to_score_dict()
+        dto = self._render_score(dto)
+        dto.score_dict_to_score()
+        self.dao_mathes.update_score(dto)
+        return Ok(dto)
+
+    @handle_servise_error 
+    def post_new_match(self, dto: MatchDTO) -> Result[MatchDTO, InitialError]:
+        player1 = self.dao_players.get_by_name(dto.player1.name)
+        if not player1:
+            player1 = self.dao_players.insert(dto.player1)
+        player2 = self.dao_players.get_by_name(dto.player2.name)
+        if not player2:
+            player2 = self.dao_players.insert(dto.player2)
+        dto.player1.id = player1.id
+        dto.player2.id = player2.id
+
+        match = self.dao_mathes.insert(dto)
+        dto.uuid = match.uuid
+        return Ok(dto)
+
+    @handle_servise_error    
+    def post_match_winner(self, dto: MatchDTO) -> Result[MatchDTO, InitialError]:
+            self.dao_mathes.update_winner(dto)
         
     def _to_dto(self, match: Matches):
         return MatchDTO(
@@ -111,6 +96,12 @@ class MatchesService():
     
     def _render_score(self, dto: MatchDTO) -> MatchDTO:
         def reset_points():
+            dto.score_dict["player1_points"] = "0"
+            dto.score_dict["player2_points"] = "0"
+
+        def reset_games_and_points():
+            dto.score_dict["player1_games"] = 0
+            dto.score_dict["player2_games"] = 0
             dto.score_dict["player1_points"] = "0"
             dto.score_dict["player2_points"] = "0"
 
@@ -144,8 +135,8 @@ class MatchesService():
             is_tie_break = True
             points1, points2 = int(points1.split(",")[1]) + 1, int(points2.split(",")[1])
             if points1 >= 7 and points1 - points2 >= 2:
-                dto.score_dict[f"{player}_games"] += 1 
-                reset_points()
+                dto.score_dict[f"{player}_sets"] += 1 
+                reset_games_and_points()
             else:
                 dto.score_dict[f"{player}_points"] = f"Тай-брейк,{points1}"
         
@@ -157,8 +148,8 @@ class MatchesService():
         elif games1 >= 6:
             if games1 - games2 >= 2:
                 dto.score_dict[f"{player}_sets"] += 1
-                dto.score_dict["player1_games"] = 0
-                dto.score_dict["player2_games"] = 0
+                reset_games_and_points()
+                
 
         # Логика победы
         if dto.score_dict["player1_sets"] == 2:

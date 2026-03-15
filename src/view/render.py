@@ -1,5 +1,6 @@
 from jinja2 import Environment, FileSystemLoader, select_autoescape
 
+from src.dto.dto_error import ErrorDTO
 from src.dto.dto_matches import MatchesDTO
 from src.dto.dto_match import MatchDTO
 
@@ -13,12 +14,8 @@ class Render():
         self.match_score = env.get_template('match-score.html')
         self.matches = env.get_template('matches.html')
         self.winner = env.get_template('winner.html')
-
-        env_error = Environment(
-            loader=FileSystemLoader('src/view/errors'),
-            autoescape=select_autoescape(['html'])
-            )
-        self.input_error = env_error.get_template('input_error.html')
+        self.error = env.get_template('error.html')
+        
 
     def render_winner(self, dto: MatchDTO):
         return self.winner.render(dto=dto.to_dict()).encode('utf-8')
@@ -29,5 +26,5 @@ class Render():
     def render_matches(self, dto: MatchesDTO):
         return self.matches.render(dto=dto.to_dict()).encode('utf-8')
 
-    def render_input_error(self, variables: dict):
-        return self.input_error.render(variables=variables).encode('utf-8')
+    def render_error(self, error_dict: ErrorDTO):
+        return self.error.render(error_dict=error_dict).encode('utf-8')

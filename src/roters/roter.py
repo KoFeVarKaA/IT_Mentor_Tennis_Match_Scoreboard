@@ -11,7 +11,8 @@ from src.view.render import Render
 def controller_factory():
     return {
         "": MainController(),
-        "new-match": MatchNewController(service=MatchesService(MatchesRepository, PlayersRepository)),
+        "new-match": MatchNewController(
+            service=MatchesService(MatchesRepository, PlayersRepository), render=Render()),
         "match-score": MatchScoreController(
             service=MatchesService(MatchesRepository, PlayersRepository), render=Render()),
         "matches": MatchesController(
