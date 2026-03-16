@@ -41,10 +41,10 @@ class MatchesService():
 
         if dto.filter_by_name: 
             matches = self.dao_mathes.get_matches(
-                    player_name=dto.filter_by_name, offset=(dto.page-1)*5, limit=(dto.page-1)*5+5) 
+                    player_name=dto.filter_by_name, offset=(dto.page-1)*5, limit=5) 
         else:
             matches = self.dao_mathes.get_matches(
-                                                    offset=(dto.page-1)*5, limit=(dto.page-1)*5+5)
+                                                    offset=(dto.page-1)*5, limit=5)
             
         for match in matches:
             dto.matches.append(self._to_dto(match))
