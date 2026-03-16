@@ -93,10 +93,10 @@
 
             {% if dto.page < dto.total_pages %}
                 <a class="next" href="/matches?page={{ dto.page + 1 }}{% if dto.filter_by_name %}&filter_by_name={{ dto.filter_by_name }}{% endif %}">&gt;</a>
-                <a class="next" href="/matches?page={{ dto.total_pages }} {% if dto.filter_by_name %}&filter_by_name={{ dto.filter_by_name }}{% endif %}">&gt;&gt;</a>
+                <a class="last" href="/matches?page={{ dto.total_pages }} {% if dto.filter_by_name %}&filter_by_name={{ dto.filter_by_name }}{% endif %}">&gt;&gt;</a>
             {% else %}
                 <a class="next disabled" href="#">&gt;</a>
-                <a class="next disabled" href="#">&gt;&gt;</a>
+                <a class="last disabled" href="#">&gt;&gt;</a>
             {% endif %}
         </div>
     </div>

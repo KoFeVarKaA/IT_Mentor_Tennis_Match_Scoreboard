@@ -53,7 +53,7 @@ class MatchesController(BaseController):
                     status_code=500, message=result.unwrap_err().message)))
             
         total_pages = ceil(dto.total_matches_count / 5)
-        if dto.page > total_pages:
+        if dto.page > total_pages and total_pages >= 1:
             url = f"/matches?page={total_pages}"
             logging.debug(f"Редирект на {url}")
             return Responses.redirect(url=url)
