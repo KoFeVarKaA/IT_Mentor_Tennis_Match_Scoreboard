@@ -57,5 +57,12 @@ class MatchesController(BaseController):
             url = f"/matches?page={total_pages}"
             logging.debug(f"Редирект на {url}")
             return Responses.redirect(url=url)
+        
+        dto.total_pages = (dto.total_matches_count + 4) // 5
+        dto.start_page = max(1, dto.page - 2)
+        dto.end_page = min(dto.total_pages, dto.start_page + 4)
+        if dto.end_page - dto.start_page < 4 and dto.total_pages >= 5:
+            dto.start_page = max(1, dto.total_pages - 4)
+            dto.end_page = dto.total_pages
         return Responses.success(data=self.render.render_matches(dto))
     
