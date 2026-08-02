@@ -4,6 +4,18 @@
 
 [Техническое задание проекта](https://zhukovsd.github.io/python-backend-learning-course/Projects/TennisScoreboard/)
 
+## Скриншоты
+
+### Главная страница
+<img src="screenshots/main.jpg" alt="Главная страница" width="500">
+
+### Список всех матчей
+<img src="screenshots/list.jpg" alt="Список всех матчей" width="500">
+
+### Станица с посчетом очков
+<img src="screenshots/points.jpg" alt="Станица с посчетом очков" width="500">
+
+
 ## Функционал приложения
 
 Работа с матчами:
