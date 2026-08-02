@@ -17,4 +17,4 @@ ENV PATH=/app/.venv/bin:$PATH
 RUN uv sync --all-extras --frozen --no-install-project
 
 COPY . .
-CMD ["python", "main.py"]
+CMD ["sh", "-c", "alembic upgrade head && python main.py"]
